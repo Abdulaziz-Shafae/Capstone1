@@ -122,12 +122,6 @@ Calculates the total inventory value of one merchant.
 
 Allows an Admin to view the inventory value of all merchants.
 
-## Run the Project
-
-Clone the repository and open the project in your IDE.
-
-Run the Spring Boot application, then use **Postman** to test the REST API.
-
 ## Author
 
 **Abdulaziz Shafae**  
