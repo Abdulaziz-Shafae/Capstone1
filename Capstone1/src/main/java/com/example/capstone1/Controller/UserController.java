@@ -241,7 +241,7 @@ public class UserController {
         return ResponseEntity.status(200).body(result);
     }
 
-    @GetMapping("/appd/admin/{id}/{Cid}")
+    @PutMapping("/appd/admin/{id}/{Cid}")
     public ResponseEntity<?> ApproveDisReq(@PathVariable String id ,@PathVariable String Cid){
         int result = userService.ApproveDReq(id , Cid);
 
