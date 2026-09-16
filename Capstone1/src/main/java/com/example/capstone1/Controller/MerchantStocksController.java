@@ -89,9 +89,9 @@ public class MerchantStocksController {
 
     }
 
-    @GetMapping("/get/merchant/{merchant}")
-    public ResponseEntity<?> getByMerchant(@PathVariable String merchant){
-        ArrayList<Product> result = merchantStockService.getByMerchant(merchant);
+    @GetMapping("/get/merchant/{merchantid}")
+    public ResponseEntity<?> getByMerchant(@PathVariable String merchantid){
+        ArrayList<Product> result = merchantStockService.getByMerchant(merchantid);
 
         if (result == null) {
             return ResponseEntity.status(400).body(new ApiResponse("Merchant not found"));

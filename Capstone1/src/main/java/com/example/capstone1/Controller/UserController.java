@@ -158,7 +158,7 @@ public class UserController {
         return ResponseEntity.status(200).body(result);
     }
 
-    @GetMapping("/appa/admin/{id}/{Cid}")
+    @PutMapping("/appa/admin/{id}/{Cid}")
     public ResponseEntity<?> ApproveAdmReq(@PathVariable String id ,@PathVariable String Cid){
         int result = userService.ApproveAReq(id , Cid);
 

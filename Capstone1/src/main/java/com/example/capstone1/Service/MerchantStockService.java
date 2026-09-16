@@ -126,13 +126,13 @@ public class MerchantStockService {
     }
 
 //this will return all the product that match this merchant
-    public ArrayList<Product> getByMerchant(String name){
+    public ArrayList<Product> getByMerchant(String id){
 
         ArrayList<Product> result= new ArrayList<>();
         String MID="";
 
         for(int i=0 ; i<merchantService.getMerchants().size() ; i++){
-            if(merchantService.getMerchants().get(i).getName().equalsIgnoreCase(name)){
+            if(merchantService.getMerchants().get(i).getID().equalsIgnoreCase(id)){
                 MID=merchantService.getMerchants().get(i).getID();
                 break;
             }
@@ -141,6 +141,7 @@ public class MerchantStockService {
         if(MID.equalsIgnoreCase("")) {
             return null;
         }
+
 
         for(int i = 0; i< merchantStocks.size() ; i++){
 
