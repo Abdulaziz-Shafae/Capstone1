@@ -2,7 +2,7 @@
 
 **Shefo Store** is a Spring Boot REST API developed as **Capstone 1** during the **Tuwaiq Academy Java Web Development & AI Bootcamp**.
 
-The project simulates an online store where customers can purchase products from merchants, manage their purchases, request discounts, and request Admin access.
+The project simulates an online store where customers can purchase products from merchants, track and refund purchases, request discounts, and request Admin access.
 
 ## Technologies
 
@@ -44,6 +44,7 @@ Client / Postman
 - IDs must contain exactly 3 digits.
 - IDs must be unique within their class.
 - IDs are checked before update operations.
+- Product and Merchant IDs are validated before stock and purchase operations.
 - Protected fields such as `role` and `balance` cannot be changed directly.
 
 ## Main Features
@@ -53,10 +54,10 @@ Client / Postman
 - Category management
 - Merchant management
 - Merchant stock management
-- Product purchasing
-- Customer purchase history
+- Product purchasing by Product ID and Merchant ID
+- Customer purchase history with Product and Merchant IDs
 - Admin purchase history
-- Product refunds
+- Product refunds with stock restoration
 - Product information lookup
 - Products by merchant
 - Admin request system
@@ -68,11 +69,11 @@ Client / Postman
 - Merchant asset calculation
 - All merchants asset report
 
-## Additional Endpoints
+## Additional Features
 
 ### Customer History
 
-Returns the purchase history of a specific customer.
+Returns the purchase history of a specific customer, including the purchased Product ID and Merchant ID.
 
 ### Admin History
 
@@ -80,7 +81,7 @@ Returns the complete purchase history for Admin users.
 
 ### Refund
 
-Refunds a purchased item, restores the stock, and returns the appropriate amount to the user.
+Refunds a previously purchased product from a specific merchant, restores the merchant stock, and returns the appropriate amount to the user.
 
 ### Get Product Info
 
