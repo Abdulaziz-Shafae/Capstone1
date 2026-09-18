@@ -75,18 +75,24 @@ public class MerchantStocksController {
 
     }
 
-    @PutMapping("/add/stock/{id}/{amount}")
-    public ResponseEntity<?> addStock(@PathVariable String id, @PathVariable int amount){
-        int result=merchantStockService.addStock(id , amount);
+    @PutMapping("/add/stock/{productID}/{merchantID}/{amount}")
+    public ResponseEntity<?> addStock(@PathVariable String productID, @PathVariable String merchantID, @PathVariable int amount) {
 
-        if(result==5)
+        int result = merchantStockService.addStock(productID, merchantID, amount);
+
+        if (result == 5)
             return ResponseEntity.status(400).body(new ApiResponse("The stock must be more than 0"));
 
-        if(result==-1)
-            return ResponseEntity.status(400).body(new ApiResponse("Merchant stock not found"));
+        if (result == 2)
+            return ResponseEntity.status(400).body(new ApiResponse("Product ID not found"));
+
+        if (result == 3)
+            return ResponseEntity.status(400).body(new ApiResponse("Merchant ID not found"));
+
+        if (result == -1)
+            return ResponseEntity.status(400).body(new ApiResponse("The merchant does not have this product"));
 
         return ResponseEntity.status(200).body(new ApiResponse("Stock added"));
-
     }
 
     @GetMapping("/get/merchant/{merchantid}")

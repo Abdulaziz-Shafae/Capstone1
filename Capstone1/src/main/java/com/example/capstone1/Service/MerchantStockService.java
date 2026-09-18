@@ -108,22 +108,52 @@ public class MerchantStockService {
         return -1;
     }
 
-    public int addStock(String id , int amount){
+    public int addStock(String productID, String merchantID, int amount) {
 
-        if(amount<1){
+        if (amount < 1) {
             return 5;
         }
-        for(int y =0 ; y< merchantStocks.size() ; y++) {
 
-            if(id.equalsIgnoreCase(merchantStocks.get(y).getID())) {
+        boolean productFound = false;
+        for (int i = 0; i < productService.getProducts().size(); i++) {
+            if (productService.getProducts().get(i).getID().equalsIgnoreCase(productID)) {
+                productFound = true;
+                break;
+            }
+        }
 
-                merchantStocks.get(y).setStock( merchantStocks.get(y).getStock()+amount );
+        if (!productFound) {
+            return 2;
+        }
+
+        boolean merchantFound = false;
+        for (int i = 0; i < merchantService.getMerchants().size(); i++) {
+            if (merchantService.getMerchants().get(i).getID().equalsIgnoreCase(merchantID)) {
+                merchantFound = true;
+                break;
+            }
+        }
+
+        if (!merchantFound) {
+            return 3;
+        }
+
+        for (int i = 0; i < merchantStocks.size(); i++) {
+
+            if (merchantStocks.get(i).getProductID().equalsIgnoreCase(productID)
+                    && merchantStocks.get(i).getMerchantID().equalsIgnoreCase(merchantID)) {
+
+                merchantStocks.get(i).setStock(
+                        merchantStocks.get(i).getStock() + amount
+                );
+
                 return 1;
             }
         }
-        return -1;
 
+        return -1;
     }
+
 
 //this will return all the product that match this merchant
     public ArrayList<Product> getByMerchant(String id){

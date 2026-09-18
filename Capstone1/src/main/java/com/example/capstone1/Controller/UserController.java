@@ -61,42 +61,59 @@ public class UserController {
         return ResponseEntity.status(200).body(new ApiResponse("User deleted"));
     }
 
-    @PutMapping("/{userID}/buy/{itemID}")
-    public ResponseEntity<?> buy(@PathVariable String userID , @PathVariable String itemID ) {
-        int result = userService.buyProduct(userID, itemID);
+    @PutMapping("/{userID}/buy/{productID}/{merchantID}")
+    public ResponseEntity<?> buy(@PathVariable String userID,
+                                 @PathVariable String productID,
+                                 @PathVariable String merchantID) {
+
+        int result = userService.buyProduct(userID, productID, merchantID);
+
         if (result == -1)
-            return ResponseEntity.status(400).body(new ApiResponse("The User not found"));
+            return ResponseEntity.status(400)
+                    .body(new ApiResponse("The User not found"));
+
+        if (result == 2)
+            return ResponseEntity.status(400)
+                    .body(new ApiResponse("The Product not found"));
+
+        if (result == 4)
+            return ResponseEntity.status(400)
+                    .body(new ApiResponse("The Merchant not found"));
 
         if (result == 3)
-            return ResponseEntity.status(400).body(new ApiResponse("The Merchant Stock not found"));
+            return ResponseEntity.status(400)
+                    .body(new ApiResponse("The Merchant does not have this product"));
 
         if (result == 5)
-            return ResponseEntity.status(400).body(new ApiResponse("Insufficient balance"));
+            return ResponseEntity.status(400)
+                    .body(new ApiResponse("Insufficient balance"));
 
-        if (result == -6)
-            return ResponseEntity.status(400).body(new ApiResponse("Out of stock"));
+        if (result == 6)
+            return ResponseEntity.status(400)
+                    .body(new ApiResponse("Out of stock"));
 
-        return ResponseEntity.status(200).body(new ApiResponse("Item purchased"));
-
+        return ResponseEntity.status(200)
+                .body(new ApiResponse("Item purchased"));
     }
 
 
-    @PutMapping("/{userID}/refund/{itemID}")
-    public ResponseEntity<?> refund(@PathVariable String userID , @PathVariable String itemID ) {
-        int result = userService.refundProduct(userID, itemID);
+    @PutMapping("/{userID}/refund/{productID}/{merchantID}")
+    public ResponseEntity<?> refund(@PathVariable String userID, @PathVariable String productID, @PathVariable String merchantID) {
+
+        int result = userService.refundProduct(userID, productID, merchantID);
 
         if (result == -1)
             return ResponseEntity.status(400).body(new ApiResponse("The User not found"));
 
         if (result == 3)
-            return ResponseEntity.status(400).body(new ApiResponse("The Merchant Stock not found"));
+            return ResponseEntity.status(400).body(new ApiResponse("The product was not found for this merchant"));
 
         if (result == 5)
-            return ResponseEntity.status(400).body(new ApiResponse("The Merchant Stock not purchased"));
+            return ResponseEntity.status(400).body(new ApiResponse("The product was not purchased"));
 
         return ResponseEntity.status(200).body(new ApiResponse("Item refunded"));
-
     }
+
 
     @GetMapping("/get/history/customer/{id}")
     public ResponseEntity<?> getHistoryID(@PathVariable String id){

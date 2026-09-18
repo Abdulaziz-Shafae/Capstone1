@@ -64,57 +64,92 @@ public class UserService {
         return -1;
     }
 
-    public int buyProduct(String userID, String itemID) {
+    public int buyProduct(String userID, String productID, String merchantID) {
 
         for (int y = 0; y < users.size(); y++) {
 
             if (userID.equalsIgnoreCase(users.get(y).getID())) {
 
-                for (int i = 0; i < merchantStockService.getMerchantStocks().size(); i++) {
+                // Check Product ID
+                boolean productFound = false;
 
-                    if (itemID.equalsIgnoreCase(merchantStockService.getMerchantStocks().get(i).getID())) {
+                for (int p = 0; p < productService.getProducts().size(); p++) {
 
-                        if (merchantStockService.getMerchantStocks().get(i).getStock() == 0) {
-                            return 6;
+                    if (productID.equalsIgnoreCase(productService.getProducts().get(p).getID())) {
+
+                        productFound = true;
+
+                        // Check Merchant ID
+                        boolean merchantFound = false;
+
+                        for (int m = 0; m < merchantService.getMerchants().size(); m++) {
+                            if (merchantID.equalsIgnoreCase(merchantService.getMerchants().get(m).getID())) {
+                                merchantFound = true;
+                                break;
+                            }
                         }
-                        for (int p = 0; p < productService.getProducts().size(); p++) {
 
-                            if (productService.getProducts().get(p).getID().equalsIgnoreCase(
-                                    merchantStockService.getMerchantStocks().get(i).getProductID())) {
+                        if (!merchantFound) {
+                            return 4;
+                        }
+
+                        // Check if merchant has this product
+                        for (int i = 0; i < merchantStockService.getMerchantStocks().size(); i++) {
+
+                            if (merchantStockService.getMerchantStocks().get(i).getProductID().equalsIgnoreCase(productID)
+                                    &&
+                                    merchantStockService.getMerchantStocks().get(i).getMerchantID().equalsIgnoreCase(merchantID)) {
+
+                                if (merchantStockService.getMerchantStocks().get(i).getStock() == 0) {
+                                    return 6;
+                                }
 
                                 if (users.get(y).getBalance() < productService.getProducts().get(p).getPrice()) {
                                     return 5;
                                 }
 
-                                history.add(users.get(y).getID() + " - " + productService.getProducts().get(p));
+                                history.add(users.get(y).getID() + " - " + productID + " - " + merchantID);
+
                                 merchantStockService.getMerchantStocks().get(i).setStock(merchantStockService.getMerchantStocks().get(i).getStock() - 1);
 
-                                if(users.get(y).getRole().equalsIgnoreCase("admin")){
-                                    users.get(y).setBalance(users.get(y).getBalance() - (productService.getProducts().get(p).getPrice()) * 0.90);
-                                }else {
+                                if (users.get(y).getRole().equalsIgnoreCase("admin")) {
 
-                                    for(int d=0 ; d<discount.size() ; d++ ){
-                                        if (discount.get(d).contains(users.get(y).getID())) {
-                                            users.get(y).setBalance(users.get(y).getBalance() - (productService.getProducts().get(p).getPrice()) * 0.95);
-                                        return 1;
+                                    users.get(y).setBalance(users.get(y).getBalance() - productService.getProducts().get(p).getPrice() * 0.90);
+
+                                } else {
+
+                                    for (int d = 0; d < discount.size(); d++) {
+
+                                        if (discount.get(d).equalsIgnoreCase(users.get(y).getID())) {
+
+                                            users.get(y).setBalance(users.get(y).getBalance() - productService.getProducts().get(p).getPrice() * 0.95);
+
+                                            return 1;
                                         }
                                     }
+
                                     users.get(y).setBalance(users.get(y).getBalance() - productService.getProducts().get(p).getPrice());
                                 }
+
                                 return 1;
                             }
-
                         }
+
+                        // Merchant exists but doesn't have this product
+                        return 3;
                     }
                 }
-                return 3;
+
+                if (!productFound) {
+                    return 2;
+                }
             }
         }
+
         return -1;
     }
 
-
-    public int refundProduct(String userID, String itemID) {
+    public int refundProduct(String userID, String productID, String merchantID) {
 
         for (int y = 0; y < users.size(); y++) {
 
@@ -122,50 +157,64 @@ public class UserService {
 
                 for (int i = 0; i < merchantStockService.getMerchantStocks().size(); i++) {
 
-                    if (itemID.equalsIgnoreCase(merchantStockService.getMerchantStocks().get(i).getID())) {
+                    if (merchantStockService.getMerchantStocks().get(i).getProductID().equalsIgnoreCase(productID)
+                            &&
+                            merchantStockService.getMerchantStocks().get(i).getMerchantID().equalsIgnoreCase(merchantID)) {
 
                         for (int p = 0; p < productService.getProducts().size(); p++) {
 
-                            if (productService.getProducts().get(p).getID().equalsIgnoreCase(
-                                    merchantStockService.getMerchantStocks().get(i).getProductID())) {
+                            if (productService.getProducts().get(p).getID().equalsIgnoreCase(productID)) {
 
-                                boolean found=false;
-                                for(int h =0 ; h<history.size() ; h++){
-                                    if(history.get(h).equalsIgnoreCase(users.get(y).getID() + " - " + productService.getProducts().get(p))){
-                                        history.remove(history.get(h));
-                                        found=true;
+                                boolean found = false;
+
+                                for (int h = 0; h < history.size(); h++) {
+
+                                    if (history.get(h).equalsIgnoreCase(userID + " - " + productID + " - " + merchantID)) {
+
+                                        history.remove(h);
+                                        found = true;
+                                        break;
                                     }
                                 }
 
-                                if(!found)
+                                if (!found) {
                                     return 5;
+                                }
 
-                                merchantStockService.getMerchantStocks().get(i).setStock(merchantStockService.getMerchantStocks().get(i).getStock() + 1);
+                                merchantStockService.getMerchantStocks().get(i).setStock(merchantStockService.getMerchantStocks().get(i).getStock() + 1
+                                );
 
-                                if(users.get(y).getRole().equalsIgnoreCase("admin")){
-                                    users.get(y).setBalance(users.get(y).getBalance() + (productService.getProducts().get(p).getPrice()) * 0.90);
-                                }else {
+                                if (users.get(y).getRole().equalsIgnoreCase("admin")) {
 
-                                    for(int d=0 ; d<discount.size() ; d++ ){
-                                        if (discount.get(d).contains(users.get(y).getID())) {
-                                            users.get(y).setBalance(users.get(y).getBalance() + (productService.getProducts().get(p).getPrice()) * 0.95);
+                                    users.get(y).setBalance(users.get(y).getBalance() + productService.getProducts().get(p).getPrice() * 0.90);
+
+                                } else {
+
+                                    for (int d = 0; d < discount.size(); d++) {
+
+                                        if (discount.get(d).equalsIgnoreCase(users.get(y).getID())) {
+
+                                            users.get(y).setBalance(users.get(y).getBalance() + productService.getProducts().get(p).getPrice() * 0.95);
+
                                             return 1;
                                         }
                                     }
+
                                     users.get(y).setBalance(users.get(y).getBalance() + productService.getProducts().get(p).getPrice());
                                 }
+
                                 return 1;
                             }
-
                         }
                     }
                 }
+
                 return 3;
             }
         }
+
         return -1;
     }
-
     public ArrayList<String> getHistoryID(String id) {
 
         boolean found=false;
@@ -227,7 +276,7 @@ public class UserService {
         }
 
         for(int i = 0; i< requestA.size() ; i++){
-            if(requestA.get(i).contains(id)){
+            if(requestA.get(i).split(" - ")[0].equalsIgnoreCase(id)){
 
                 requestA.set( (requestA.indexOf( requestA.get(i) ) ) , (id + " - " + history.size()) );
                 return 1;
@@ -275,7 +324,7 @@ public class UserService {
             if(users.get(i).getID().equalsIgnoreCase(Cid)){
 
                 for(int y = 0; y< requestA.size() ; y++){
-                    if(requestA.get(y).contains(Cid)){
+                    if(requestA.get(y).split(" - ")[0].equalsIgnoreCase(Cid)){
 
                         users.get(i).setRole("admin");
                         found=true;
@@ -387,7 +436,7 @@ public class UserService {
         }
 
         for(int i = 0; i< requestD.size() ; i++){
-            if(requestD.get(i).contains(id)){
+            if(requestD.get(i).split(" - ")[0].equalsIgnoreCase(id)){
 
                 requestD.set( (requestD.indexOf( requestD.get(i) ) ) , (id + " - " + history.size()) );
                 return 1;
@@ -440,7 +489,7 @@ public class UserService {
 
                 for(int y = 0; y< requestD.size() ; y++){
 
-                    if(requestD.get(y).contains(Cid)){
+                    if(requestD.get(y).split(" - ")[0].equalsIgnoreCase(Cid)){
 
                         discount.add(users.get(i).getID());
 
